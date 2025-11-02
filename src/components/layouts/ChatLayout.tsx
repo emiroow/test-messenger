@@ -6,6 +6,7 @@ import {
   type Conversation,
   type Message,
 } from "../../data/mock";
+import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { ChatHeader } from "../chat/ChatHeader";
 import { MessageInput } from "../chat/MessageInput";
 import { MessageList } from "../chat/MessageList";
@@ -24,8 +25,13 @@ export const ChatLayout: React.FC<{
   const activeId =
     id && conversations.some((c) => c.id === id) ? id : initialId;
   const [messagesMap, setMessagesMap] = useState(messagesByConversation);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(true);
+  const isDesktop = useIsDesktop();
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  // Default: open on desktop, hidden on mobile; allow user toggles afterwards
+  useEffect(() => {
+    if (isDesktop) setProfileOpen(true);
+  }, [isDesktop]);
 
   // Ensure URL always has a valid chat id
   useEffect(() => {
@@ -71,14 +77,14 @@ export const ChatLayout: React.FC<{
           name={active.name}
           avatar={active.avatar}
           subtitle={active.online ? "Online" : "Last seen recently"}
-          onOpenSidebar={() => setSidebarOpen(true)}
+          onOpenSidebar={() => navigate("/chats")}
           onOpenProfile={() => setProfileOpen((v) => !v)}
         />
         <MessageList messages={messages} name={active.name} />
         <MessageInput onSend={handleSend} />
       </div>
 
-      {/* Reserve space when profile panel is open so header/buttons remain visible */}
+      {/* Reserve space when profile panel is open so header/buttons remain visible (desktop only) */}
       {profileOpen ? (
         <div className="hidden md:block w-80 shrink-0" aria-hidden />
       ) : null}
@@ -115,51 +121,51 @@ export const ChatLayout: React.FC<{
         )}
       </AnimatePresence>
 
-      {/* Sidebar Drawer (opens from left) with animation */}
+      {/* Mobile profile overlay (full screen) */}
       <AnimatePresence>
-        {sidebarOpen && (
+        {profileOpen && (
           <motion.div
-            className="fixed inset-0 z-50 md:hidden flex justify-start"
+            className="fixed inset-0 z-50 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div
-              initial={{ x: -96 }}
-              animate={{ x: 0 }}
-              exit={{ x: -96 }}
-              transition={{ type: "spring", stiffness: 420, damping: 34 }}
-              className="h-full w-80 bg-(--sidebar) shadow-xl border-r border-(--border)"
-            >
-              <Sidebar
-                items={conversations}
-                activeId={active.id}
-                onSelect={(nextId) => {
-                  navigate(`/chat/${nextId}`);
-                  setSidebarOpen(false);
-                }}
-              />
-            </motion.div>
-            <motion.div
-              className="flex-1 bg-black/40"
-              onClick={() => setSidebarOpen(false)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
+              className="absolute inset-0 bg-black/40"
+              onClick={() => setProfileOpen(false)}
             />
-            <div className="absolute right-2 top-2">
-              <Button
-                variant="secondary"
-                size="icon"
-                aria-label="Close"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <IconX className="size-5" />
-              </Button>
-            </div>
+            <motion.div
+              initial={{ y: 32, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 32, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+              className="absolute inset-0 bg-(--panel)"
+            >
+              <div className="absolute right-2 top-2 z-10">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  aria-label="Close profile"
+                  onClick={() => setProfileOpen(false)}
+                  className="h-10 w-10"
+                >
+                  <IconX className="size-5" />
+                </Button>
+              </div>
+              <div className="h-full overflow-y-auto">
+                <ProfilePanel
+                  name={active.name}
+                  avatar={active.avatar}
+                  handle={active.handle}
+                  userId={active.userId}
+                />
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mobile chats list is a dedicated page at /chats. Drawer removed. */}
     </div>
   );
 };
