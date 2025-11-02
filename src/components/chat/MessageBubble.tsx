@@ -5,7 +5,7 @@ import { Avatar } from "../ui/avatar";
 export type MessageBubbleProps = {
   author: "me" | "them";
   content: string;
-  timestamp: string; // ISO
+  time: string;
   avatar?: string | null;
   name?: string;
   showAvatar?: boolean;
@@ -14,16 +14,12 @@ export type MessageBubbleProps = {
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
   author,
   content,
-  timestamp,
+  time,
   avatar,
   name,
   showAvatar,
 }) => {
   const isMe = author === "me";
-  const time = new Date(timestamp).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 
   return (
     <div

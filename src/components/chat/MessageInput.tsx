@@ -3,16 +3,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { IconPlus, IconSend } from "../icons";
 import { Button } from "../ui/button";
 
-export const MessageInput: React.FC<{
-  onSend: (text: string) => void;
-}> = ({ onSend }) => {
+export const MessageInput: React.FC = () => {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const send = () => {
     const text = value.trim();
     if (!text) return;
-    onSend(text);
+    // Here you can add your send logic
+    console.log("Send message:", text);
     setValue("");
   };
 
@@ -23,19 +22,18 @@ export const MessageInput: React.FC<{
     }
   };
 
-  // Auto-resize textarea up to a max height
+  // Auto-resize textarea
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
     el.style.height = "0px";
-    const next = Math.min(el.scrollHeight, 160); // ~10 rows max
+    const next = Math.min(el.scrollHeight, 160);
     el.style.height = next + "px";
   }, [value]);
 
   return (
     <div className="p-3">
       <div className="mx-auto flex max-w-3xl items-center gap-2">
-        {/* Left action */}
         <motion.div
           whileTap={{ scale: 0.94 }}
           whileHover={{ scale: 1.05 }}
@@ -50,7 +48,6 @@ export const MessageInput: React.FC<{
             <IconPlus className="size-5 opacity-80" />
           </Button>
         </motion.div>
-        {/* Input */}
         <div className="flex h-12 flex-1 items-center rounded-xl border border-(--border) bg-(--panel) px-3 focus-within:ring-2 focus-within:ring-(--primary)">
           <textarea
             ref={textareaRef}
@@ -63,7 +60,6 @@ export const MessageInput: React.FC<{
             className="max-h-40 w-full resize-none bg-transparent text-sm leading-[1.2] outline-none placeholder:opacity-60 text-start"
           />
         </div>
-        {/* Send */}
         <motion.div
           whileTap={{ scale: 0.96 }}
           whileHover={{ scale: 1.05 }}

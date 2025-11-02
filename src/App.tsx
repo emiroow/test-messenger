@@ -1,33 +1,16 @@
 // React import is not required with automatic JSX runtime
-import { Navigate, Route, Routes } from "react-router-dom";
-import { ChatLayout } from "./components/layouts/ChatLayout";
-import { conversations, messagesByConversation } from "./data/mock";
-import ChatsPage from "./pages/ChatsPage";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { QueryProvider } from "./providers/QueryProvider";
+import { routes } from "./routes";
+
+// Create router instance
+const router = createBrowserRouter(routes);
 
 function App() {
   return (
-    <Routes>
-      <Route
-        path="/chat/:id"
-        element={
-          <ChatLayout
-            conversations={conversations}
-            messagesByConversation={messagesByConversation}
-          />
-        }
-      />
-      <Route
-        path="/chats"
-        element={<ChatsPage conversations={conversations} />}
-      />
-      <Route
-        path="/"
-        element={
-          <Navigate to={`/chat/${conversations[0]?.id ?? "1"}`} replace />
-        }
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <QueryProvider>
+      <RouterProvider router={router} />
+    </QueryProvider>
   );
 }
 

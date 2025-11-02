@@ -1,69 +1,59 @@
-import { AnimatePresence, motion } from "framer-motion";
-import React, { Fragment, useEffect, useRef } from "react";
-import { currentUserId, type Message } from "../../data/mock";
+import { motion } from "framer-motion";
+import React from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { MessageBubble } from "./MessageBubble";
 
-export const MessageList: React.FC<{
-  messages: Message[];
-  name?: string;
-}> = ({ messages, name }) => {
-  const bottomRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+// Sample messages for UI display only
+const sampleMessages = [
+  {
+    id: "m1",
+    author: "them" as const,
+    content: "سلام! پروژه به کجا رسید؟",
+    time: "4:11 PM",
+  },
+  {
+    id: "m2",
+    author: "me" as const,
+    content: "سلام، تسک‌ها 90% انجام شده. الان روی UI کار می‌کنم.",
+    time: "4:27 PM",
+  },
+  {
+    id: "m3",
+    author: "them" as const,
+    content: "عالیه! هر وقت آماده شد خبر بده.",
+    time: "4:31 PM",
+  },
+];
 
+export const MessageList: React.FC = () => {
   return (
     <ScrollArea className="flex-1 px-4 py-4">
       <div className="mx-auto max-w-3xl space-y-3">
-        <AnimatePresence initial={false}>
-          {messages.map((m, i) => {
-            const prev = messages[i - 1];
-            const day = new Date(m.timestamp).toDateString();
-            const prevDay = prev
-              ? new Date(prev.timestamp).toDateString()
-              : null;
-            const showDate = !prev || day !== prevDay;
-            const author =
-              m.userId === currentUserId ? "me" : ("them" as const);
-            return (
-              <Fragment key={m.id}>
-                {showDate ? (
-                  <motion.div
-                    className="py-2 text-center text-xs opacity-70"
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                  >
-                    {new Date(m.timestamp).toLocaleDateString(undefined, {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </motion.div>
-                ) : null}
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                >
-                  <MessageBubble
-                    author={author}
-                    content={m.content}
-                    timestamp={m.timestamp}
-                    name={author === "them" ? name : "Me"}
-                    showAvatar={
-                      author === "them" &&
-                      (i === 0 || messages[i - 1].userId === currentUserId)
-                    }
-                  />
-                </motion.div>
-              </Fragment>
-            );
-          })}
-        </AnimatePresence>
-        <div ref={bottomRef} />
+        {/* Date divider */}
+        <motion.div
+          className="py-2 text-center text-xs opacity-70"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          Sun, Nov 1
+        </motion.div>
+
+        {sampleMessages.map((m, i) => (
+          <motion.div
+            key={m.id}
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 500, damping: 32 }}
+          >
+            <MessageBubble
+              author={m.author}
+              content={m.content}
+              time={m.time}
+              name={m.author === "them" ? "Sara" : "Me"}
+              showAvatar={m.author === "them" && i === 0}
+            />
+          </motion.div>
+        ))}
       </div>
     </ScrollArea>
   );

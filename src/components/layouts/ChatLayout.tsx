@@ -1,11 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  currentUserId,
-  type Conversation,
-  type Message,
-} from "../../data/mock";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { ChatHeader } from "../chat/ChatHeader";
 import { MessageInput } from "../chat/MessageInput";
@@ -15,81 +10,41 @@ import { Sidebar } from "../chat/Sidebar";
 import { IconX } from "../icons";
 import { Button } from "../ui/button";
 
-export const ChatLayout: React.FC<{
-  conversations: Conversation[];
-  messagesByConversation: Record<string, Message[]>;
-}> = ({ conversations, messagesByConversation }) => {
+export const ChatLayout: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const initialId = conversations[0]?.id ?? "";
-  const activeId =
-    id && conversations.some((c) => c.id === id) ? id : initialId;
-  const [messagesMap, setMessagesMap] = useState(messagesByConversation);
   const isDesktop = useIsDesktop();
   const [profileOpen, setProfileOpen] = useState(false);
 
-  // Default: open on desktop, hidden on mobile; allow user toggles afterwards
+  // Open profile panel on desktop, close on mobile
   useEffect(() => {
-    if (isDesktop) setProfileOpen(true);
-  }, [isDesktop]);
-
-  // Ensure URL always has a valid chat id
-  useEffect(() => {
-    if (!id || !conversations.some((c) => c.id === id)) {
-      if (initialId) navigate(`/chat/${initialId}`, { replace: true });
+    if (isDesktop) {
+      setProfileOpen(true);
+    } else {
+      setProfileOpen(false);
     }
-  }, [id, conversations, initialId, navigate]);
-
-  const active = useMemo(
-    () => conversations.find((c) => c.id === activeId) || conversations[0],
-    [conversations, activeId]
-  );
-
-  const messages = messagesMap[active.id] ?? [];
-
-  const handleSend = (text: string) => {
-    const msg: Message = {
-      id: Math.random().toString(36).slice(2),
-      userId: currentUserId,
-      content: text,
-      timestamp: new Date().toISOString(),
-    };
-    setMessagesMap((prev) => ({
-      ...prev,
-      [active.id]: [...(prev[active.id] ?? []), msg],
-    }));
-  };
+  }, [isDesktop]);
 
   return (
     <div className="relative flex h-dvh w-full bg-(--bg) text-(--text)">
-      {/* Sidebar (left) fixed on md+, drawer on small */}
       <div className="hidden md:block">
-        <Sidebar
-          items={conversations}
-          activeId={active.id}
-          onSelect={(nextId) => navigate(`/chat/${nextId}`)}
-        />
+        <Sidebar onSelect={(id) => navigate(`/chat/${id}`)} />
       </div>
 
-      {/* Main chat (center) */}
       <div className={"chat-wallpaper flex min-w-0 flex-1 flex-col"}>
         <ChatHeader
-          name={active.name}
-          avatar={active.avatar}
-          subtitle={active.online ? "Online" : "Last seen recently"}
+          name="Sara"
+          subtitle="Online"
           onOpenSidebar={() => navigate("/chats")}
           onOpenProfile={() => setProfileOpen((v) => !v)}
         />
-        <MessageList messages={messages} name={active.name} />
-        <MessageInput onSend={handleSend} />
+        <MessageList />
+        <MessageInput />
       </div>
 
-      {/* Reserve space when profile panel is open so header/buttons remain visible (desktop only) */}
       {profileOpen ? (
         <div className="hidden md:block w-80 shrink-0" aria-hidden />
       ) : null}
 
-      {/* Desktop profile panel (animated toggle) */}
       <AnimatePresence>
         {profileOpen && (
           <motion.aside
@@ -100,12 +55,7 @@ export const ChatLayout: React.FC<{
             className="absolute right-0 top-0 z-20 hidden h-full w-80 md:block"
           >
             <div className="relative h-full">
-              <ProfilePanel
-                name={active.name}
-                avatar={active.avatar}
-                handle={active.handle}
-                userId={active.userId}
-              />
+              <ProfilePanel name="Sara" handle="sara" />
               <div className="absolute right-2 top-2">
                 <Button
                   variant="secondary"
@@ -121,7 +71,6 @@ export const ChatLayout: React.FC<{
         )}
       </AnimatePresence>
 
-      {/* Mobile profile overlay (full screen) */}
       <AnimatePresence>
         {profileOpen && (
           <motion.div
@@ -153,12 +102,7 @@ export const ChatLayout: React.FC<{
                 </Button>
               </div>
               <div className="h-full overflow-y-auto">
-                <ProfilePanel
-                  name={active.name}
-                  avatar={active.avatar}
-                  handle={active.handle}
-                  userId={active.userId}
-                />
+                <ProfilePanel name="Sara" handle="sara" />
               </div>
             </motion.div>
           </motion.div>

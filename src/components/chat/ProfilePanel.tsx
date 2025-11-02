@@ -9,8 +9,7 @@ export const ProfilePanel: React.FC<{
   name: string;
   avatar?: string | null;
   handle?: string;
-  userId?: string;
-}> = ({ name, avatar, handle, userId }) => {
+}> = ({ name, avatar, handle }) => {
   return (
     <div className="flex h-full w-full lg:w-80 flex-col border-l border-(--border) bg-(--panel)">
       <div className="px-4 py-5">
@@ -19,11 +18,10 @@ export const ProfilePanel: React.FC<{
           <div className="text-center">
             <div className="text-base font-semibold">{name}</div>
             <div className="text-xs opacity-70">
-              {handle ? `@${handle}` : userId ? userId : "Last seen recently"}
+              {handle ? `@${handle}` : "Last seen recently"}
             </div>
           </div>
         </div>
-        {/* Actions like Telegram: Search, Call, Video */}
         <div className="mt-4 grid grid-cols-3 gap-2">
           <motion.div
             whileTap={{ scale: 0.96 }}
@@ -81,7 +79,7 @@ export const ProfilePanel: React.FC<{
           <div className="mb-2 text-xs font-semibold uppercase opacity-70">
             Bio
           </div>
-          <p className="text-sm opacity-90">زندگی آینه‌ست، بهش لبخند بزن 😊</p>
+          <p className="text-sm opacity-90">زندگی آینه‌ست، بهش لبخند بزن ���</p>
         </section>
         <section>
           <div className="mb-2 text-xs font-semibold uppercase opacity-70">
