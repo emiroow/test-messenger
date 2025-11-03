@@ -27,14 +27,14 @@ export const ChatLayout: React.FC = () => {
   return (
     <div className="relative flex h-dvh w-full bg-(--bg) text-(--text)">
       <div className="hidden md:block">
-        <Sidebar onSelect={(id) => navigate(`/chat/${id}`)} />
+        <Sidebar onSelect={(id) => navigate(`/${id}`)} />
       </div>
 
       <div className={"chat-wallpaper flex min-w-0 flex-1 flex-col"}>
         <ChatHeader
           name="Sara"
           subtitle="Online"
-          onOpenSidebar={() => navigate("/chats")}
+          onOpenSidebar={() => navigate("/")}
           onOpenProfile={() => setProfileOpen((v) => !v)}
         />
         <MessageList />

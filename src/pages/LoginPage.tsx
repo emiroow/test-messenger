@@ -25,7 +25,7 @@ export const LoginPage: React.FC = () => {
     }
 
     localStorage.setItem("userId", trimmedId);
-    navigate("/chat/1");
+    navigate("/");
   };
 
   return (

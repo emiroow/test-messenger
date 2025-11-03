@@ -10,7 +10,7 @@ export const routes: RouteObject[] = [
     element: <LoginPage />,
   },
   {
-    path: "/chat/:id",
+    path: "/:peer",
     element: (
       <ProtectedRoute>
         <ChatLayout />
@@ -18,16 +18,12 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: "/chats",
+    path: "/",
     element: (
       <ProtectedRoute>
         <ChatsPage />
       </ProtectedRoute>
     ),
-  },
-  {
-    path: "/",
-    element: <Navigate to="/chat/1" replace />,
   },
   {
     path: "*",
