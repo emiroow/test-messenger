@@ -10,7 +10,7 @@ export const routes: RouteObject[] = [
     element: <LoginPage />,
   },
   {
-    path: "/:peer",
+    path: "/:chatId",
     element: (
       <ProtectedRoute>
         <ChatLayout />

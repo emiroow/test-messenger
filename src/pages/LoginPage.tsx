@@ -7,12 +7,14 @@ import { ThemeToggle } from "../components/ui/theme-toggle";
 
 export const LoginPage: React.FC = () => {
   const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedId = userId.trim();
+    const trimmedName = userName.trim();
 
     if (!trimmedId) {
       setError("Please enter your User ID");
@@ -24,8 +26,7 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
-    localStorage.setItem("userId", trimmedId);
-    navigate("/");
+    console.log(trimmedId, trimmedName);
   };
 
   return (
@@ -53,7 +54,7 @@ export const LoginPage: React.FC = () => {
             className="mb-8 text-center"
           >
             <div className="mb-3 flex justify-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-blue-500 shadow-lg">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-violet-500 to-blue-500 shadow-lg">
                 <svg
                   className="h-8 w-8 text-white"
                   fill="none"
@@ -82,10 +83,24 @@ export const LoginPage: React.FC = () => {
             onSubmit={handleSubmit}
             className="space-y-6"
           >
-            <div>
+            <div className="mb-3">
+              <label htmlFor="name" className="mt-2 block text-sm font-medium">
+                Name
+              </label>
+              <Input
+                id="name"
+                type="text"
+                value={userName}
+                onChange={(e) => {
+                  setUserName(e.target.value);
+                  setError("");
+                }}
+                placeholder="Enter your name (optional)"
+                className="h-12 bg-(--bg) border-(--border) text-(--text) placeholder:opacity-60"
+              />
               <label
                 htmlFor="userId"
-                className="mb-2 block text-sm font-medium"
+                className="mt-2 block text-sm font-medium"
               >
                 User ID
               </label>
@@ -115,7 +130,7 @@ export const LoginPage: React.FC = () => {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 type="submit"
-                className="h-12 w-full rounded-xl bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40"
+                className="h-12 w-full rounded-xl bg-linear-to-r from-violet-500 to-blue-500 text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40"
               >
                 Continue to Messenger
               </Button>
